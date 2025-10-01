@@ -666,6 +666,103 @@
                 padding: 1.5rem;
             }
         }
+        /* Arreglos específicos para móvil */
+@media (max-width: 768px) {
+    .cart-sidebar {
+        width: 100%;
+        right: -100%;
+    }
+    
+    .cart-sidebar.active {
+        right: 0;
+    }
+    
+    .cart-item {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1rem 0;
+    }
+    
+    .cart-item img {
+        width: 80px;
+        height: 80px;
+        margin-right: 0;
+        margin-bottom: 1rem;
+    }
+    
+    .cart-item-details {
+        width: 100%;
+    }
+    
+    .cart-item-quantity {
+        justify-content: center;
+        margin-top: 1rem;
+    }
+    
+    .quantity-btn, .quantity-input {
+        width: 35px;
+        height: 35px;
+    }
+    
+    /* Mejorar botones para touch */
+    .add-to-cart, .quantity-btn, .remove-item {
+        min-height: 44px;
+        padding: 10px 15px;
+    }
+    
+    /* Asegurar que los botones sean fáciles de tocar */
+    .btn {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+/* Arreglos CRÍTICOS para móvil */
+@media (max-width: 768px) {
+    /* Asegurar que el carrito se vea bien */
+    .cart-sidebar {
+        width: 100% !important;
+        right: -100% !important;
+    }
+    
+    .cart-sidebar.active {
+        right: 0 !important;
+    }
+    
+    /* Mejorar el overlay */
+    .cart-overlay {
+        background: rgba(0, 0, 0, 0.7) !important;
+    }
+    
+    /* Asegurar que el menú hamburguesa funcione */
+    .navbar-toggler {
+        z-index: 1000;
+    }
+    
+    .navbar-collapse {
+        background: white;
+        padding: 1rem;
+        border-radius: 10px;
+        margin-top: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    /* Botones más grandes para dedos */
+    .nav-link, .btn, .add-to-cart, .quantity-btn {
+        min-height: 44px !important;
+        min-width: 44px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    /* Espaciado mejorado para móvil */
+    .cart-item {
+        padding: 1rem 0;
+        gap: 1rem;
+    }
+}
     </style>
 </head>
 <body>
@@ -1306,4 +1403,65 @@
           navbar.style.background = 'rgba(255, 255, 255, 0.95)';
       }
   });
+  // Mejorar experiencia táctil para móvil
+document.addEventListener('DOMContentLoaded', function() {
+    // Prevenir zoom en inputs
+    document.querySelectorAll('input, select, textarea').forEach(element => {
+        element.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+    });
+    
+    // Mejorar clics en botones del carrito
+    document.addEventListener('touchstart', function() {}, { passive: true });
+});
+// Arreglos específicos para móvil - Menú y Carrito
+document.addEventListener('DOMContentLoaded', function() {
+    // Arreglar el menú hamburguesa de Bootstrap
+    const navbarToggler = document.querySelector('.navbar-toggler');
+    const navbarNav = document.querySelector('#navbarNav');
+    
+    if (navbarToggler) {
+        navbarToggler.addEventListener('click', function(e) {
+            e.preventDefault();
+            navbarNav.classList.toggle('show');
+        });
+    }
+    
+    // Arreglar el carrito para móvil
+    const cartIcon = document.getElementById('cartIcon');
+    const cartSidebar = document.getElementById('cartSidebar');
+    const cartOverlay = document.getElementById('cartOverlay');
+    
+    if (cartIcon) {
+        // Evento táctil mejorado para el carrito
+        cartIcon.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            cartSidebar.classList.add('active');
+            cartOverlay.classList.add('active');
+        });
+        
+        // Cerrar carrito al tocar fuera
+        cartOverlay.addEventListener('click', function(e) {
+            e.preventDefault();
+            cartSidebar.classList.remove('active');
+            cartOverlay.classList.remove('active');
+        });
+        
+        // Cerrar carrito con el botón
+        const closeCart = document.getElementById('closeCart');
+        if (closeCart) {
+            closeCart.addEventListener('click', function(e) {
+                e.preventDefault();
+                cartSidebar.classList.remove('active');
+                cartOverlay.classList.remove('active');
+            });
+        }
+    }
+    
+    // Prevenir problemas de zoom en inputs
+    document.addEventListener('touchstart', function() {}, { passive: true });
+});
 </script>
+
