@@ -1465,24 +1465,24 @@
             cart.forEach(item => {
                 const cartItem = document.createElement('div');
                 cartItem.className = 'cart-item';
-               cartItem.innerHTML = `
-    <img src="${item.image}" alt="${item.name}" 
-         onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIGZpbGw9IiNGMEYwRjAiLz48cGF0aCBkPSJNMzAgMzRDMzMuMzEzNyAzNCAzNiAzMS4zMTM3IDM2IDI4QzM2IDI0LjY4NjMgMzMuMzEzNyAyMiAzMCAyMkMyNi42ODYzIDIyIDI0IDI0LjY4NjMgMjQgMjhDMjQgMzEuMzEzNyAyNi42ODYzIDM0IDMwIDM0WiIgZmlsbD0iI0NFQ0VDRSIvPjxwYXRoIGQ9Ik0zNi41IDE5LjVIMjMuNUMyMi42NzE2IDE5LjUgMjIgMTguODI4NCAyMiAxOFYxNkMyMiAxNS4xNzE2IDIyLjY3MTYgMTQuNSAyMy41IDE0LjVIMzYuNUMzNy4zMjg0IDE0LjUgMzggMTUuMTcxNiAzOCAxNlYxOEMzOCAxOC44Mjg0IDM3LjMyODQgMTkuNSAzNi41IDE5LjVaIiBmaWxsPSIjQ0VDRUNFIi8+PC9zdmc+'" 
-         style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
-    <div class="cart-item-details">
-        <div class="cart-item-title">${item.name}</div>
-        <div class="cart-item-price">$${item.price}</div>
-        <div class="cart-item-quantity">
-            <button class="quantity-btn decrease-quantity" data-id="${item.id}">-</button>
-            <input type="text" class="quantity-input" value="${item.quantity}" readonly>
-            <button class="quantity-btn increase-quantity" data-id="${item.id}">+</button>
-            <button class="btn btn-sm btn-outline-danger ms-2 remove-item" data-id="${item.id}">
-                <i class="fas fa-trash"></i>
-            </button>
-        </div>
-    </div>
-    <div class="fw-bold">$${item.price * item.quantity}</div>
-`;
+                cartItem.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}">
+                    <div class="cart-item-details">
+                        <div class="cart-item-title">${item.name}</div>
+                        <div class="cart-item-price">$${item.price}</div>
+                        <div class="cart-item-quantity">
+                            <button class="quantity-btn decrease-quantity" data-id="${item.id}">-</button>
+                            <input type="text" class="quantity-input" value="${item.quantity}" readonly>
+                            <button class="quantity-btn increase-quantity" data-id="${item.id}">+</button>
+                            <button class="btn btn-sm btn-outline-danger ms-2 remove-item" data-id="${item.id}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="fw-bold">$${item.price * item.quantity}</div>
+                `;
+                cartItems.appendChild(cartItem);
+            });
             
             // Actualizar totales con descuentos
             subtotalAmount.textContent = `$${subtotal}`;
