@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>GRECIAN - Panel de Administración</title>
+    <style>
+        :root {
+            --primary: #2E8B57;
+            --primary-dark: #1F6B42;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .sidebar {
+            background: var(--primary);
+            color: white;
+            height: 100vh;
+            position: fixed;
+        }
+        
+        .sidebar-brand {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .sidebar-menu {
+            padding: 1rem 0;
+        }
+        
+        .sidebar-menu a {
+            color: white;
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            display: block;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+        }
+        
+        .order-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .status-pendiente { border-left-color: #FFC107; }
+        .status-confirmado { border-left-color: #17A2B8; }
+        .status-completado { border-left-color: #28A745; }
+        .status-cancelado { border-left-color: #DC3545; }
+        
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Sistema de Login -->
+    <div id="loginSection" class="login-container">
+        <div class="text-center mb-4">
+            <img src="./imagenes/escultura.jpeg" alt="GRECIAN" width="80" height="80" class="rounded-circle mb-3">
+            <h3>Panel de Administración</h3>
+            <p class="text-muted">Ingresa tus credenciales</p>
+        </div>
+        
+        <form id="loginForm">
+            <div class="mb-3">
+                <label for="username" class="form-label">Usuario</label>
+                <input type="text" class="form-control" id="username" value="admin" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Contraseña</label>
+                <input type="password" class="form-control" id="password" value="grecian2024" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Ingresar</button>
+        </form>
+    </div>
+
+    <!-- Panel Principal (oculto inicialmente) -->
+    <div id="adminPanel" style="display: none;">
+        <div class="sidebar" style="width: 250px;">
+            <div class="sidebar-brand">
+                <h4 class="mb-0">GRECIAN Admin</h4>
+                <small>Panel de Control</small>
+            </div>
+            <div class="sidebar-menu">
+                <a href="#" class="active" onclick="showSection('dashboard')">
+                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                </a>
+                <a href="#" onclick="showSection('pedidos')">
+                    <i class="fas fa-shopping-cart me-2"></i>Pedidos
+                </a>
+                <a href="#" onclick="showSection('finanzas')">
+                    <i class="fas fa-chart-line me-2"></i>Finanzas
+                </a>
+                <a href="#" onclick="logout()">
+                    <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                </a>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- Dashboard -->
+            <div id="dashboardSection">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>Dashboard</h2>
+                    <button class="btn btn-outline-primary" onclick="cargarDatos()">
+                        <i class="fas fa-sync-alt me-2"></i>Actualizar
+                    </button>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="stat-card text-center">
+                            <i class="fas fa-shopping-cart fa-2x text-primary mb-2"></i>
+                            <h3 id="totalPedidos">0</h3>
+                            <p class="text-muted mb-0">Pedidos Totales</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card text-center">
+                            <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+                            <h3 id="pedidosPendientes">0</h3>
+                            <p class="text-muted mb-0">Pendientes</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card text-center">
+                            <i class="fas fa-money-bill-wave fa-2x text-success mb-2"></i>
+                            <h3 id="ingresosTotales">$0</h3>
+                            <p class="text-muted mb-0">Ingresos Totales</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card text-center">
+                            <i class="fas fa-users fa-2x text-info mb-2"></i>
+                            <h3 id="clientesUnicos">0</h3>
+                            <p class="text-muted mb-0">Clientes Únicos</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-md-8">
+                        <div class="stat-card">
+                            <h5>Pedidos Recientes</h5>
+                            <div id="pedidosRecientes">
+                                <p class="text-muted">Cargando pedidos...</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <h5>Estadísticas Rápidas</h5>
+                            <div id="estadisticasRapidas">
+                                <p class="text-muted">Cargando estadísticas...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección Pedidos -->
+            <div id="pedidosSection" style="display: none;">
+                <h2 class="mb-4">Gestión de Pedidos</h2>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" id="searchOrders" placeholder="Buscar pedidos...">
+                    </div>
+                    <div class="col-md-6">
+                        <select class="form-control" id="filterStatus" onchange="filtrarPedidos()">
+                            <option value="todos">Todos los estados</option>
+                            <option value="pendiente">Pendiente</option>
+                            <option value="confirmado">Confirmado</option>
+                            <option value="completado">Completado</option>
+                            <option value="cancelado">Cancelado</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="listaPedidos">
+                    <!-- Los pedidos se cargarán aquí -->
+                </div>
+            </div>
+
+            <!-- Sección Finanzas -->
+            <div id="finanzasSection" style="display: none;">
+                <h2 class="mb-4">Reportes Financieros</h2>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="stat-card">
+                            <h5>Ingresos por Mes</h5>
+                            <div id="ingresosMensuales">
+                                <p class="text-muted">Cargando datos...</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="stat-card">
+                            <h5>Productos Más Vendidos</h5>
+                            <div id="productosPopulares">
+                                <p class="text-muted">Cargando datos...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card mt-4">
+                    <h5>Detalle de Transacciones</h5>
+                    <div id="detalleTransacciones">
+                        <p class="text-muted">Cargando transacciones...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Credenciales de administrador
+        const ADMIN_USER = 'admin';
+        const ADMIN_PASS = 'grecian2024';
+
+        // Sistema de Login
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (username === ADMIN_USER && password === ADMIN_PASS) {
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+                cargarDatos();
+            } else {
+                alert('Credenciales incorrectas');
+            }
+        });
+
+        function logout() {
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('password').value = '';
+        }
+
+        function showSection(sectionName) {
+            // Ocultar todas las secciones
+            document.getElementById('dashboardSection').style.display = 'none';
+            document.getElementById('pedidosSection').style.display = 'none';
+            document.getElementById('finanzasSection').style.display = 'none';
+            
+            // Mostrar la sección seleccionada
+            document.getElementById(sectionName + 'Section').style.display = 'block';
+            
+            // Actualizar datos si es necesario
+            if (sectionName === 'pedidos') cargarPedidos();
+            if (sectionName === 'finanzas') cargarFinanzas();
+        }
+
+        // Cargar datos del localStorage
+        function cargarDatos() {
+            const pedidos = JSON.parse(localStorage.getItem('grecianPedidos')) || [];
+            
+            // Actualizar estadísticas
+            document.getElementById('totalPedidos').textContent = pedidos.length;
+            document.getElementById('pedidosPendientes').textContent = pedidos.filter(p => p.estado === 'pendiente').length;
+            document.getElementById('ingresosTotales').textContent = '$' + pedidos.reduce((total, pedido) => total + pedido.total, 0);
+            document.getElementById('clientesUnicos').textContent = new Set(pedidos.map(p => p.telefono)).size;
+            
+            cargarPedidosRecientes();
+            cargarEstadisticasRapidas();
+        }
+
+        function cargarPedidosRecientes() {
+            const pedidos = JSON.parse(localStorage.getItem('grecianPedidos')) || [];
+            const pedidosRecientes = pedidos.slice(-5).reverse();
+            
+            const html = pedidosRecientes.map(pedido => `
+                <div class="order-card status-${pedido.estado}">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6>Pedido #${pedido.id}</h6>
+                            <p class="mb-1"><strong>Cliente:</strong> ${pedido.nombre || 'No especificado'}</p>
+                            <p class="mb-1"><strong>Teléfono:</strong> ${pedido.telefono}</p>
+                            <p class="mb-1"><strong>Total:</strong> $${pedido.total}</p>
+                            <p class="mb-0"><strong>Estado:</strong> 
+                                <span class="badge bg-${getBadgeColor(pedido.estado)}">${pedido.estado}</span>
+                            </p>
+                        </div>
+                        <div>
+                            <small class="text-muted">${new Date(pedido.fecha).toLocaleDateString()}</small>
+                            <br>
+                            <button class="btn btn-sm btn-outline-primary mt-1" onclick="verDetallePedido('${pedido.id}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('pedidosRecientes').innerHTML = html || '<p class="text-muted">No hay pedidos recientes</p>';
+        }
+
+        function cargarEstadisticasRapidas() {
+            const pedidos = JSON.parse(localStorage.getItem('grecianPedidos')) || [];
+            const hoy = new Date().toDateString();
+            const pedidosHoy = pedidos.filter(p => new Date(p.fecha).toDateString() === hoy);
+            
+            const html = `
+                <div class="mb-2">
+                    <strong>Pedidos hoy:</strong> ${pedidosHoy.length}
+                </div>
+                <div class="mb-2">
+                    <strong>Ingresos hoy:</strong> $${pedidosHoy.reduce((total, p) => total + p.total, 0)}
+                </div>
+                <div class="mb-2">
+                    <strong>Promedio por pedido:</strong> $${pedidos.length ? (pedidos.reduce((total, p) => total + p.total, 0) / pedidos.length).toFixed(2) : 0}
+                </div>
+            `;
+            
+            document.getElementById('estadisticasRapidas').innerHTML = html;
+        }
+
+        function getBadgeColor(estado) {
+            const colores = {
+                'pendiente': 'warning',
+                'confirmado': 'info',
+                'completado': 'success',
+                'cancelado': 'danger'
+            };
+            return colores[estado] || 'secondary';
+        }
+
+        function verDetallePedido(id) {
+            const pedidos = JSON.parse(localStorage.getItem('grecianPedidos')) || [];
+            const pedido = pedidos.find(p => p.id === id);
+            
+            if (pedido) {
+                const productosHTML = pedido.productos.map(p => `
+                    <tr>
+                        <td>${p.name}</td>
+                        <td>${p.quantity}</td>
+                        <td>$${p.price}</td>
+                        <td>$${p.price * p.quantity}</td>
+                    </tr>
+                `).join('');
+                
+                const modalHTML = `
+                    <div class="modal fade" id="detalleModal" tabindex="-1">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Detalle del Pedido #${pedido.id}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h6>Información del Cliente</h6>
+                                            <p><strong>Nombre:</strong> ${pedido.nombre || 'No especificado'}</p>
+                                            <p><strong>Teléfono:</strong> ${pedido.telefono}</p>
+                                            <p><strong>Dirección:</strong> ${pedido.direccion || 'No especificada'}</p>
+                                            <p><strong>Fecha:</strong> ${new Date(pedido.fecha).toLocaleString()}</p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6>Información del Pago</h6>
+                                            <p><strong>Total:</strong> $${pedido.total}</p>
+                                            <p><strong>Descuento aplicado:</strong> ${pedido.descuento ? 'Sí' : 'No'}</p>
+                                            <p><strong>Estado:</strong> 
+                                                <span class="badge bg-${getBadgeColor(pedido.estado)}">${pedido.estado}</span>
+                                            </p>
+                                            <div class="mt-3">
+                                                <label><strong>Cambiar Estado:</strong></label>
+                                                <select class="form-select" onchange="cambiarEstado('${pedido.id}', this.value)">
+                                                    <option value="pendiente" ${pedido.estado === 'pendiente' ? 'selected' : ''}>Pendiente</option>
+                                                    <option value="confirmado" ${pedido.estado === 'confirmado' ? 'selected' : ''}>Confirmado</option>
+                                                    <option value="completado" ${pedido.estado === 'completado' ? 'selected' : ''}>Completado</option>
+                                                    <option value="cancelado" ${pedido.estado === 'cancelado' ? 'selected' : ''}>Cancelado</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <hr>
+                                    
+                                    <h6>Productos</h6>
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Producto</th>
+                                                <th>Cantidad</th>
+                                                <th>Precio Unit.</th>
+                                                <th>Subtotal</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${productosHTML}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                    <button type="button" class="btn btn-primary" onclick="imprimirPedido('${pedido.id}')">
+                                        <i class="fas fa-print me-2"></i>Imprimir
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Agregar modal al DOM si no existe
+                if (!document.getElementById('detalleModal')) {
+                    document.body.insertAdjacentHTML('beforeend', modalHTML);
+                } else {
+                    document.getElementById('detalleModal').remove();
+                    document.body.insertAdjacentHTML('beforeend', modalHTML);
+                }
+                
+                // Mostrar modal
+                new bootstrap.Modal(document.getElementById('detalleModal')).show();
+            }
+        }
+
+        function cambiarEstado(id, nuevoEstado) {
+            const pedidos = JSON.parse(localStorage.getItem('grecianPedidos')) || [];
+            const pedidoIndex = pedidos.findIndex(p => p.id === id);
+            
+            if (pedidoIndex !== -1) {
+                pedidos[pedidoIndex].estado = nuevoEstado;
+                localStorage.setItem('grecianPedidos', JSON.stringify(pedidos));
+                cargarDatos();
+                if (document.getElementById('pedidosSection').style.display !== 'none') {
+                    cargarPedidos();
+                }
+                alert('Estado actualizado correctamente');
+            }
+        }
+
+        function cargarPedidos() {
+            const pedidos = JSON.parse(localStorage.getItem('grecianPedidos')) || [];
+            const filtro = document.getElementById('filterStatus').value;
+            const busqueda = document.getElementById('searchOrders').value.toLowerCase();
+            
+            let pedidosFiltrados = pedidos;
+            
+            // Aplicar filtros
+            if (filtro !== 'todos') {
+                pedidosFiltrados = pedidosFiltrados.filter(p => p.estado === filtro);
+            }
+            
+            if (busqueda) {
+                pedidosFiltrados = pedidosFiltrados.filter(p => 
+                    p.nombre?.toLowerCase().includes(busqueda) ||
+                    p.telefono.includes(busqueda) ||
+                    p.id.includes(busqueda)
+                );
+            }
+            
+            const html = pedidosFiltrados.reverse().map(pedido => `
+                <div class="order-card status-${pedido.estado}">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div style="flex: 1;">
+                            <h6>Pedido #${pedido.id}</h6>
+                            <p class="mb-1"><strong>Cliente:</strong> ${pedido.nombre || 'No especificado'}</p>
+                            <p class="mb-1"><strong>Teléfono:</strong> ${pedido.telefono}</p>
+                            <p class="mb-1"><strong>Dirección:</strong> ${pedido.direccion || 'No especificada'}</p>
+                            <p class="mb-1"><strong>Total:</strong> $${pedido.total}</p>
+                            <p class="mb-0"><strong>Fecha:</strong> ${new Date(pedido.fecha).toLocaleString()}</p>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-${getBadgeColor(pedido.estado)}">${pedido.estado}</span>
+                            <br>
+                            <div class="btn-group mt-2">
+                                <button class="btn btn-sm btn-outline-primary" onclick="verDetallePedido('${pedido.id}')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-success" onclick="marcarCompletado('${pedido.id}')">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="cancelarPedido('${pedido.id}')">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('') || '<p class="text-muted">No hay pedidos que coincidan con los filtros</p>';
+            
+            document.getElementById('listaPedidos').innerHTML = html;
+        }
+
+        function filtrarPedidos() {
+            cargarPedidos();
+        }
+
+        function marcarCompletado(id) {
+            cambiarEstado(id, 'completado');
+        }
+
+        function cancelarPedido(id) {
+            if (confirm('¿Estás seguro de que quieres cancelar este pedido?')) {
+                cambiarEstado(id, 'cancelado');
+            }
+        }
+
+        function cargarFinanzas() {
+            const pedidos = JSON.parse(localStorage.getItem('grecianPedidos')) || [];
+            
+            // Calcular ingresos mensuales
+            const ingresosPorMes = {};
+            pedidos.forEach(pedido => {
+                const mes = new Date(pedido.fecha).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+                if (!ingresosPorMes[mes]) {
+                    ingresosPorMes[mes] = 0;
+                }
+                ingresosPorMes[mes] += pedido.total;
+            });
+            
+            const ingresosHTML = Object.entries(ingresosPorMes).map(([mes, total]) => `
+                <div class="d-flex justify-content-between mb-2">
+                    <span>${mes}</span>
+                    <strong>$${total}</strong>
+                </div>
+            `).join('') || '<p class="text-muted">No hay datos de ingresos</p>';
+            
+            document.getElementById('ingresosMensuales').innerHTML = ingresosHTML;
+            
+            // Productos más vendidos
+            const productosVendidos = {};
+            pedidos.forEach(pedido => {
+                pedido.productos.forEach(producto => {
+                    if (!productosVendidos[producto.name]) {
+                        productosVendidos[producto.name] = 0;
+                    }
+                    productosVendidos[producto.name] += producto.quantity;
+                });
+            });
+            
+            const productosHTML = Object.entries(productosVendidos)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5)
+                .map(([nombre, cantidad]) => `
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>${nombre}</span>
+                        <strong>${cantidad} unidades</strong>
+                    </div>
+                `).join('') || '<p class="text-muted">No hay datos de productos</p>';
+            
+            document.getElementById('productosPopulares').innerHTML = productosHTML;
+            
+            // Detalle de transacciones
+            const transaccionesHTML = pedidos.slice(-10).reverse().map(pedido => `
+                <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                    <div>
+                        <small class="text-muted">${new Date(pedido.fecha).toLocaleDateString()}</small>
+                        <br>
+                        <strong>Pedido #${pedido.id}</strong>
+                    </div>
+                    <div class="text-end">
+                        <strong>$${pedido.total}</strong>
+                        <br>
+                        <span class="badge bg-${getBadgeColor(pedido.estado)}">${pedido.estado}</span>
+                    </div>
+                </div>
+            `).join('') || '<p class="text-muted">No hay transacciones recientes</p>';
+            
+            document.getElementById('detalleTransacciones').innerHTML = transaccionesHTML;
+        }
+
+        function imprimirPedido(id) {
+            const pedidos = JSON.parse(localStorage.getItem('grecianPedidos')) || [];
+            const pedido = pedidos.find(p => p.id === id);
+            
+            if (pedido) {
+                const ventanaImpresion = window.open('', '_blank');
+                ventanaImpresion.document.write(`
+                    <html>
+                        <head>
+                            <title>Pedido GRECIAN #${pedido.id}</title>
+                            <style>
+                                body { font-family: Arial, sans-serif; margin: 20px; }
+                                .header { text-align: center; margin-bottom: 30px; }
+                                .section { margin-bottom: 20px; }
+                                table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                                th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                                th { background-color: #f2f2f2; }
+                                .total { font-size: 1.2em; font-weight: bold; text-align: right; }
+                            </style>
+                        </head>
+                        <body>
+                            <div class="header">
+                                <h1>GRECIAN - Comida Saludable</h1>
+                                <h2>Pedido #${pedido.id}</h2>
+                            </div>
+                            
+                            <div class="section">
+                                <h3>Información del Cliente</h3>
+                                <p><strong>Nombre:</strong> ${pedido.nombre || 'No especificado'}</p>
+                                <p><strong>Teléfono:</strong> ${pedido.telefono}</p>
+                                <p><strong>Dirección:</strong> ${pedido.direccion || 'No especificada'}</p>
+                                <p><strong>Fecha:</strong> ${new Date(pedido.fecha).toLocaleString()}</p>
+                                <p><strong>Estado:</strong> ${pedido.estado}</p>
+                            </div>
+                            
+                            <div class="section">
+                                <h3>Productos</h3>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Producto</th>
+                                            <th>Cantidad</th>
+                                            <th>Precio Unit.</th>
+                                            <th>Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${pedido.productos.map(p => `
+                                            <tr>
+                                                <td>${p.name}</td>
+                                                <td>${p.quantity}</td>
+                                                <td>$${p.price}</td>
+                                                <td>$${p.price * p.quantity}</td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                                <div class="total">
+                                    Total: $${pedido.total}
+                                </div>
+                            </div>
+                            
+                            <div class="section">
+                                <p><em>Impreso el: ${new Date().toLocaleString()}</em></p>
+                            </div>
+                        </body>
+                    </html>
+                `);
+                ventanaImpresion.document.close();
+                ventanaImpresion.print();
+            }
+        }
+
+        // Inicializar búsqueda en tiempo real
+        document.getElementById('searchOrders').addEventListener('input', filtrarPedidos);
+
+        // Cargar Bootstrap para los modales
+        if (typeof bootstrap === 'undefined') {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js';
+            document.head.appendChild(script);
+        }
+    </script>
+</body>
+</html>
