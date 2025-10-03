@@ -763,6 +763,146 @@
         gap: 1rem;
     }
 }
+/* Descuentos y Promociones */
+.discount-badge {
+    background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    z-index: 2;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.discount-message {
+    background: linear-gradient(135deg, #4ECDC4, #44A08D);
+    color: white;
+    padding: 1rem;
+    border-radius: var(--radius);
+    margin: 1rem 0;
+    text-align: center;
+    animation: slideIn 0.5s ease;
+}
+
+.discount-message.warning {
+    background: linear-gradient(135deg, #FFD93D, #FF9A3D);
+    color: var(--dark);
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.progress-bar {
+    background: #e9ecef;
+    border-radius: 10px;
+    height: 8px;
+    margin: 0.5rem 0;
+    overflow: hidden;
+}
+
+.progress-fill {
+    background: var(--primary);
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+
+.envase-promo {
+    background: linear-gradient(135deg, #A8E6CF, #56C596);
+    border: 2px dashed var(--primary);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin: 1rem 0;
+    text-align: center;
+}
+
+.envase-promo i {
+    font-size: 2rem;
+    color: var(--primary-dark);
+    margin-bottom: 0.5rem;
+}
+/* Descuentos y Promociones */
+.discount-badge {
+    background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    z-index: 2;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.discount-message {
+    background: linear-gradient(135deg, #4ECDC4, #44A08D);
+    color: white;
+    padding: 1rem;
+    border-radius: var(--radius);
+    margin: 1rem 0;
+    text-align: center;
+    animation: slideIn 0.5s ease;
+}
+
+.discount-message.warning {
+    background: linear-gradient(135deg, #FFD93D, #FF9A3D);
+    color: var(--dark);
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.progress-bar {
+    background: #e9ecef;
+    border-radius: 10px;
+    height: 8px;
+    margin: 0.5rem 0;
+    overflow: hidden;
+}
+
+.progress-fill {
+    background: var(--primary);
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+
+.envase-promo {
+    background: linear-gradient(135deg, #A8E6CF, #56C596);
+    border: 2px dashed var(--primary);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin: 1rem 0;
+    text-align: center;
+}
+
+.envase-promo i {
+    font-size: 2rem;
+    color: var(--primary-dark);
+    margin-bottom: 0.5rem;
+}
     </style>
 </head>
 <body>
@@ -807,37 +947,77 @@
     </nav>
 
     <!-- Cart Sidebar -->
-    <div class="cart-overlay" id="cartOverlay"></div>
-    <div class="cart-sidebar" id="cartSidebar">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4>Tu Carrito</h4>
-            <button class="btn-close" id="closeCart"></button>
+<div class="cart-overlay" id="cartOverlay"></div>
+<div class="cart-sidebar" id="cartSidebar">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4>Tu Carrito</h4>
+        <button class="btn-close" id="closeCart"></button>
+    </div>
+    
+    <!-- Mensaje de descuento por cantidad -->
+    <div class="discount-message d-none" id="bulkDiscountMessage">
+        <i class="fas fa-tag me-2"></i>
+        <strong>¡10% DE DESCUENTO!</strong>
+        <p class="mb-0 small">Por comprar 10 o más productos</p>
+    </div>
+    
+    <!-- Mensaje para alcanzar descuento -->
+    <div class="discount-message warning d-none" id="progressDiscountMessage">
+        <i class="fas fa-bullseye me-2"></i>
+        <strong>¡Faltan <span id="productsNeeded">0</span> productos para tu 10% de descuento!</strong>
+        <div class="progress-bar">
+            <div class="progress-fill" id="discountProgress"></div>
         </div>
-        <div id="cartItems">
-            <div class="empty-cart">
-                <i class="fas fa-shopping-cart"></i>
-                <p>Tu carrito está vacío</p>
-            </div>
+    </div>
+    
+    <!-- Promoción de envases -->
+    <div class="envase-promo">
+        <i class="fas fa-recycle"></i>
+        <h6 class="mb-2">♻️ Promoción Sostenible</h6>
+        <p class="small mb-2">¿Devolvés el envase con su tapa?</p>
+        <p class="small mb-0"><strong>¡Te regalamos 10% extra en tu próxima compra de yogurt!</strong></p>
+    </div>
+    
+    <div id="cartItems">
+        <div class="empty-cart">
+            <i class="fas fa-shopping-cart"></i>
+            <p>Tu carrito está vacío</p>
         </div>
-        <div class="cart-total d-none" id="cartTotal">
+    </div>
+    
+    <div class="cart-total d-none" id="cartTotal">
+        <div class="d-flex justify-content-between mb-2">
+            <span>Subtotal:</span>
+            <span id="subtotalAmount">$0</span>
+        </div>
+        <div class="d-flex justify-content-between mb-2 text-success" id="discountLine" style="display: none!important;">
+            <span>Descuento (10%):</span>
+            <span id="discountAmount">-$0</span>
+        </div>
+        <hr>
+        <div class="d-flex justify-content-between fw-bold fs-5">
             <span>Total:</span>
             <span id="totalAmount">$0</span>
         </div>
-        <button class="btn btn-primary w-100 mt-3 d-none" id="checkoutBtn">Finalizar Compra</button>
-        
-        <!-- Payment Section -->
-        <div class="payment-section" id="paymentSection">
-            <h5>Método de Pago</h5>
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle me-2"></i>
-                Serás redirigido a Mercado Pago para completar tu compra
-            </div>
-            <button class="mercado-pago-btn" id="payWithMercadoPago">
-                <i class="fas fa-credit-card"></i>
-                Pagar con Mercado Pago
-            </button>
-        </div>
     </div>
+    
+    <button class="btn btn-primary w-100 mt-3 d-none" id="checkoutBtn">
+        <i class="fas fa-credit-card me-2"></i>Finalizar Compra
+    </button>
+    
+    <!-- Payment Section -->
+    <div class="payment-section" id="paymentSection">
+        <h5>Método de Pago</h5>
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            Serás redirigido a Mercado Pago para completar tu compra
+        </div>
+        <button class="mercado-pago-btn" id="payWithMercadoPago">
+            <i class="fas fa-credit-card"></i>
+            Pagar con Mercado Pago
+        </button>
+    </div>
+</div>
 
     <!-- Hero Section -->
     <section class="hero" id="inicio">
@@ -1096,372 +1276,493 @@
         </div>
     </footer>
 <!-- Agrega esto en tu navbar -->
-<li class="nav-item cart-icon" id="cartIcon">
-  <a class="nav-link">
-      <i class="fas fa-shopping-cart"></i>
-      <span class="cart-count">0</span>
-  </a>
-</li>
+
 
 <!-- Y este carrito sidebar (puede ir al final del body) -->
-<div class="cart-overlay" id="cartOverlay"></div>
-<div class="cart-sidebar" id="cartSidebar">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-      <h4>Tu Carrito</h4>
-      <button class="btn-close" id="closeCart"></button>
-  </div>
-  <div id="cartItems">
-      <div class="empty-cart">
-          <i class="fas fa-shopping-cart"></i>
-          <p>Tu carrito está vacío</p>
-      </div>
-  </div>
-  <div class="cart-total d-none" id="cartTotal">
-      <span>Total:</span>
-      <span id="totalAmount">$0</span>
-  </div>
-  <button class="btn btn-primary w-100 mt-3 d-none" id="checkoutBtn">Finalizar Compra</button>
-  
-  <div class="payment-section" id="paymentSection">
-      <h5>Método de Pago</h5>
-      <button class="mercado-pago-btn" id="payWithMercadoPago">
-          <i class="fas fa-credit-card"></i>
-          Pagar con Mercado Pago
-      </button>
-  </div>
+
+    
+    <!-- Mensaje de descuento por cantidad -->
+    <div class="discount-message d-none" id="bulkDiscountMessage">
+        <i class="fas fa-tag me-2"></i>
+        <strong>¡10% DE DESCUENTO!</strong>
+        <p class="mb-0 small">Por comprar 10 o más productos</p>
+    </div>
+    
+    <!-- Mensaje para alcanzar descuento -->
+    <div class="discount-message warning d-none" id="progressDiscountMessage">
+        <i class="fas fa-bullseye me-2"></i>
+        <strong>¡Faltan <span id="productsNeeded">0</span> productos para tu 10% de descuento!</strong>
+        <div class="progress-bar">
+            <div class="progress-fill" id="discountProgress"></div>
+        </div>
+    </div>
+    
+    <!-- Promoción de envases -->
+    <div class="envase-promo">
+        <i class="fas fa-recycle"></i>
+        <h6 class="mb-2">♻️ Promoción Sostenible</h6>
+        <p class="small mb-2">¿Devolvés el envase con su tapa?</p>
+        <p class="small mb-0"><strong>¡Te regalamos 10% extra en tu próxima compra de yogurt!</strong></p>
+    </div>
+    
+    <div id="cartItems">
+        <div class="empty-cart">
+            <i class="fas fa-shopping-cart"></i>
+            <p>Tu carrito está vacío</p>
+        </div>
+    </div>
+    
+    <div class="cart-total d-none" id="cartTotal">
+        <div class="d-flex justify-content-between mb-2">
+            <span>Subtotal:</span>
+            <span id="subtotalAmount">$0</span>
+        </div>
+        <div class="d-flex justify-content-between mb-2 text-success" id="discountLine" style="display: none!important;">
+            <span>Descuento (10%):</span>
+            <span id="discountAmount">-$0</span>
+        </div>
+        <hr>
+        <div class="d-flex justify-content-between fw-bold fs-5">
+            <span>Total:</span>
+            <span id="totalAmount">$0</span>
+        </div>
+    </div>
+    
+    <button class="btn btn-primary w-100 mt-3 d-none" id="checkoutBtn">
+        <i class="fas fa-credit-card me-2"></i>Finalizar Compra
+    </button>
+    
+    <!-- Payment Section -->
+    <div class="payment-section" id="paymentSection">
+        <h5>Método de Pago</h5>
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            Serás redirigido a Mercado Pago para completar tu compra
+        </div>
+        <button class="mercado-pago-btn" id="payWithMercadoPago">
+            <i class="fas fa-credit-card"></i>
+            Pagar con Mercado Pago
+        </button>
+    </div>
 </div>
 <script>
-  // Carrito de compras
-  let cart = [];
-  let cartCount = 0;
-  let totalAmount = 0;
-
-  // Elementos del DOM
-  const cartIcon = document.getElementById('cartIcon');
-  const cartSidebar = document.getElementById('cartSidebar');
-  const cartOverlay = document.getElementById('cartOverlay');
-  const closeCart = document.getElementById('closeCart');
-  const cartItems = document.getElementById('cartItems');
-  const cartTotal = document.getElementById('cartTotal');
-  const totalAmountElement = document.getElementById('totalAmount');
-  const checkoutBtn = document.getElementById('checkoutBtn');
-  const paymentSection = document.getElementById('paymentSection');
-
-  // Abrir carrito
-  cartIcon.addEventListener('click', () => {
-      cartSidebar.classList.add('active');
-      cartOverlay.classList.add('active');
-  });
-
-  // Cerrar carrito
-  closeCart.addEventListener('click', () => {
-      cartSidebar.classList.remove('active');
-      cartOverlay.classList.remove('active');
-  });
-
-  cartOverlay.addEventListener('click', () => {
-      cartSidebar.classList.remove('active');
-      cartOverlay.classList.remove('active');
-  });
-
-  // Agregar productos al carrito
-  document.querySelectorAll('.add-to-cart').forEach(button => {
-      button.addEventListener('click', (e) => {
-          const product = {
-              id: e.target.dataset.id,
-              name: e.target.dataset.name,
-              price: parseInt(e.target.dataset.price),
-              image: e.target.dataset.image,
-              quantity: 1
-          };
-
-          addToCart(product);
-      });
-  });
-
-  function addToCart(product) {
-      const existingProduct = cart.find(item => item.id === product.id);
-      
-      if (existingProduct) {
-          existingProduct.quantity++;
-      } else {
-          cart.push(product);
-      }
-      
-      updateCart();
-      
-      // Mostrar mensaje de confirmación
-      showToast(`${product.name} agregado al carrito`);
-  }
-
-  function updateCart() {
-      // Actualizar contador
-      cartCount = cart.reduce((total, item) => total + item.quantity, 0);
-      document.querySelector('.cart-count').textContent = cartCount;
-      
-      // Actualizar items del carrito
-      if (cart.length === 0) {
-          cartItems.innerHTML = `
-              <div class="empty-cart">
-                  <i class="fas fa-shopping-cart"></i>
-                  <p>Tu carrito está vacío</p>
-              </div>
-          `;
-          cartTotal.classList.add('d-none');
-          paymentSection.style.display = 'none';
-          checkoutBtn.classList.add('d-none');
-      } else {
-          cartItems.innerHTML = '';
-          totalAmount = 0;
-          
-          cart.forEach(item => {
-              totalAmount += item.price * item.quantity;
-              
-              const cartItem = document.createElement('div');
-              cartItem.className = 'cart-item';
-              cartItem.innerHTML = `
-                  <img src="${item.image}" alt="${item.name}">
-                  <div class="cart-item-details">
-                      <div class="cart-item-title">${item.name}</div>
-                      <div class="cart-item-price">$${item.price}</div>
-                      <div class="cart-item-quantity">
-                          <button class="quantity-btn decrease-quantity" data-id="${item.id}">-</button>
-                          <input type="text" class="quantity-input" value="${item.quantity}" readonly>
-                          <button class="quantity-btn increase-quantity" data-id="${item.id}">+</button>
-                          <button class="btn btn-sm btn-outline-danger ms-2 remove-item" data-id="${item.id}">
-                              <i class="fas fa-trash"></i>
-                          </button>
-                      </div>
-                  </div>
-                  <div class="fw-bold">$${item.price * item.quantity}</div>
-              `;
-              cartItems.appendChild(cartItem);
-          });
-          
-          totalAmountElement.textContent = `$${totalAmount}`;
-          cartTotal.classList.remove('d-none');
-          checkoutBtn.classList.remove('d-none');
-          paymentSection.style.display = 'none';
-      }
-      
-      // Agregar event listeners para los controles de cantidad
-      document.querySelectorAll('.decrease-quantity').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-              const id = e.target.dataset.id;
-              const item = cart.find(item => item.id === id);
-              if (item.quantity > 1) {
-                  item.quantity--;
-              } else {
-                  cart = cart.filter(item => item.id !== id);
-              }
-              updateCart();
-          });
-      });
-      
-      document.querySelectorAll('.increase-quantity').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-              const id = e.target.dataset.id;
-              const item = cart.find(item => item.id === id);
-              item.quantity++;
-              updateCart();
-          });
-      });
-      
-      document.querySelectorAll('.remove-item').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-              const id = e.target.closest('.remove-item').dataset.id;
-              cart = cart.filter(item => item.id !== id);
-              updateCart();
-          });
-      });
-  }
-
-  // Finalizar compra
-  checkoutBtn.addEventListener('click', () => {
-      paymentSection.style.display = 'block';
-      paymentSection.scrollIntoView({ behavior: 'smooth' });
-      
-      // Configurar el botón de pago
-      const payWithMercadoPago = document.getElementById('payWithMercadoPago');
-      payWithMercadoPago.addEventListener('click', processPayment);
-  });
-
-  // Procesar pago
-  function processPayment() {
-      if (cart.length === 0) {
-          showAlert('Tu carrito está vacío', 'warning');
-          return;
-      }
-      
-      // Mostrar instrucciones de transferencia
-      const transferMessage = `
-          <div class="transfer-instructions">
-              <h5 class="text-center mb-3">💳 Método de Pago</h5>
-              <div class="alert alert-info">
-                  <strong>Total a pagar: $${totalAmount}</strong>
-                  <hr>
-                  <p class="mb-2"><i class="fas fa-money-bill-wave me-2"></i>Transferí al alias:</p>
-                  <div class="text-center">
-                      <h4 class="text-primary">matiasgiorgio05</h4>
-                      <small class="text-muted">(Mercado Pago)</small>
-                  </div>
-                  <hr>
-                  <p class="small mb-1">📧 <strong>Email:</strong> giorgiomatias4@gmail.com</p>
-                  
-                  <p class="small">📱 <strong>Una vez realizada la transferencia *ENVIAR COMPROBANTE Y DIRECCION DE ENTREGA AL NUMERO* +543416170034:</strong></p>
-              </div>
-              <button class="btn btn-success w-100 mt-3" id="confirmPayment">
-                  <i class="fas fa-check-circle me-2"></i>Ya realicé la transferencia
-              </button>
-          </div>
-      `;
-      
-      paymentSection.innerHTML = transferMessage;
-      
-      // Agregar evento al botón de confirmación
-      document.getElementById('confirmPayment').addEventListener('click', () => {
-          // Mostrar mensaje de éxito
-          showAlert('✅ ¡Pago confirmado! Tu pedido está siendo procesado. Te contactaremos pronto.', 'success');
-          
-          // Reiniciar carrito
-          cart = [];
-          updateCart();
-          
-          // Cerrar el carrito
-          cartSidebar.classList.remove('active');
-          cartOverlay.classList.remove('active');
-          
-          // Restaurar sección de pago a su estado original
-          paymentSection.innerHTML = `
-              <h5>Método de Pago</h5>
-              <button class="mercado-pago-btn" id="payWithMercadoPago">
-                  <i class="fas fa-credit-card"></i>
-                  Pagar con Mercado Pago
-              </button>
-          `;
-      });
-  }
-
-  // Funciones auxiliares
-  function showToast(message) {
-      const toast = document.createElement('div');
-      toast.className = 'position-fixed bottom-0 end-0 p-3';
-      toast.style.zIndex = '11';
-      toast.innerHTML = `
-          <div class="toast show" role="alert">
-              <div class="toast-header">
-                  <i class="fas fa-check-circle text-success me-2"></i>
-                  <strong class="me-auto">Producto agregado</strong>
-                  <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
-              </div>
-              <div class="toast-body">
-                  ${message}
-              </div>
-          </div>
-      `;
-      document.body.appendChild(toast);
-      
-      setTimeout(() => {
-          toast.remove();
-      }, 3000);
-  }
-
-  function showAlert(message, type) {
-      const alert = document.createElement('div');
-      alert.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
-      alert.style.zIndex = '11';
-      alert.innerHTML = `
-          ${message}
-          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      `;
-      document.body.appendChild(alert);
-      
-      setTimeout(() => {
-          alert.remove();
-      }, 5000);
-  }
-
-  // Smooth scroll para navegación
-  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-          e.preventDefault();
-          const target = document.querySelector(this.getAttribute('href'));
-          if (target) {
-              target.scrollIntoView({
-                  behavior: 'smooth',
-                  block: 'start'
-              });
-          }
-      });
-  });
-
-  // Actualizar navbar al hacer scroll
-  window.addEventListener('scroll', () => {
-      const navbar = document.querySelector('.navbar');
-      if (window.scrollY > 100) {
-          navbar.style.background = 'rgba(255, 255, 255, 0.98)';
-      } else {
-          navbar.style.background = 'rgba(255, 255, 255, 0.95)';
-      }
-  });
-  // Mejorar experiencia táctil para móvil
-document.addEventListener('DOMContentLoaded', function() {
-    // Prevenir zoom en inputs
-    document.querySelectorAll('input, select, textarea').forEach(element => {
-        element.addEventListener('touchstart', function(e) {
-            e.preventDefault();
-        }, { passive: false });
-    });
-    
-    // Mejorar clics en botones del carrito
-    document.addEventListener('touchstart', function() {}, { passive: true });
-});
-// Arreglos específicos para móvil - Menú y Carrito
-document.addEventListener('DOMContentLoaded', function() {
-    // Arreglar el menú hamburguesa de Bootstrap
-    const navbarToggler = document.querySelector('.navbar-toggler');
-    const navbarNav = document.querySelector('#navbarNav');
-    
-    if (navbarToggler) {
-        navbarToggler.addEventListener('click', function(e) {
-            e.preventDefault();
-            navbarNav.classList.toggle('show');
-        });
-    }
-    
-    // Arreglar el carrito para móvil
+    // Carrito de compras
+    let cart = [];
+    let cartCount = 0;
+  
+    // Elementos del DOM
     const cartIcon = document.getElementById('cartIcon');
     const cartSidebar = document.getElementById('cartSidebar');
     const cartOverlay = document.getElementById('cartOverlay');
-    
-    if (cartIcon) {
-        // Evento táctil mejorado para el carrito
-        cartIcon.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            cartSidebar.classList.add('active');
-            cartOverlay.classList.add('active');
+    const closeCart = document.getElementById('closeCart');
+    const cartItems = document.getElementById('cartItems');
+    const cartTotal = document.getElementById('cartTotal');
+    const totalAmountElement = document.getElementById('totalAmount');
+    const checkoutBtn = document.getElementById('checkoutBtn');
+    const paymentSection = document.getElementById('paymentSection');
+  
+    // Abrir carrito
+    cartIcon.addEventListener('click', () => {
+        cartSidebar.classList.add('active');
+        cartOverlay.classList.add('active');
+    });
+  
+    // Cerrar carrito
+    closeCart.addEventListener('click', () => {
+        cartSidebar.classList.remove('active');
+        cartOverlay.classList.remove('active');
+    });
+  
+    cartOverlay.addEventListener('click', () => {
+        cartSidebar.classList.remove('active');
+        cartOverlay.classList.remove('active');
+    });
+  
+    // Agregar productos al carrito
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const product = {
+                id: e.target.dataset.id,
+                name: e.target.dataset.name,
+                price: parseInt(e.target.dataset.price),
+                image: e.target.dataset.image,
+                quantity: 1
+            };
+  
+            addToCart(product);
+        });
+    });
+  
+    function addToCart(product) {
+        const existingProduct = cart.find(item => item.id === product.id);
+        
+        if (existingProduct) {
+            existingProduct.quantity++;
+        } else {
+            cart.push(product);
+        }
+        
+        updateCart();
+        
+        // Mostrar mensaje de confirmación
+        showToast(`${product.name} agregado al carrito`);
+    }
+  
+    function updateCart() {
+        // Actualizar contador
+        cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+        document.querySelector('.cart-count').textContent = cartCount;
+        
+        // Calcular subtotal y verificar descuentos
+        const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+        const hasBulkDiscount = cartCount >= 10;
+        const discount = hasBulkDiscount ? subtotal * 0.1 : 0;
+        const finalTotal = subtotal - discount;
+        
+        // Actualizar elementos de descuento
+        const bulkDiscountMessage = document.getElementById('bulkDiscountMessage');
+        const progressDiscountMessage = document.getElementById('progressDiscountMessage');
+        const productsNeeded = document.getElementById('productsNeeded');
+        const discountProgress = document.getElementById('discountProgress');
+        const subtotalAmount = document.getElementById('subtotalAmount');
+        const discountLine = document.getElementById('discountLine');
+        const discountAmount = document.getElementById('discountAmount');
+        
+        // Mostrar/ocultar mensajes de descuento
+        if (hasBulkDiscount) {
+            bulkDiscountMessage.classList.remove('d-none');
+            progressDiscountMessage.classList.add('d-none');
+        } else if (cartCount > 0) {
+            bulkDiscountMessage.classList.add('d-none');
+            progressDiscountMessage.classList.remove('d-none');
+            const needed = 10 - cartCount;
+            productsNeeded.textContent = needed;
+            const progress = Math.min((cartCount / 10) * 100, 100);
+            discountProgress.style.width = `${progress}%`;
+        } else {
+            bulkDiscountMessage.classList.add('d-none');
+            progressDiscountMessage.classList.add('d-none');
+        }
+        
+        // Actualizar items del carrito
+        if (cart.length === 0) {
+            cartItems.innerHTML = `
+                <div class="empty-cart">
+                    <i class="fas fa-shopping-cart"></i>
+                    <p>Tu carrito está vacío</p>
+                </div>
+            `;
+            cartTotal.classList.add('d-none');
+            paymentSection.style.display = 'none';
+            checkoutBtn.classList.add('d-none');
+            
+            // Ocultar mensajes de descuento cuando el carrito está vacío
+            bulkDiscountMessage.classList.add('d-none');
+            progressDiscountMessage.classList.add('d-none');
+        } else {
+            cartItems.innerHTML = '';
+            
+            cart.forEach(item => {
+                const cartItem = document.createElement('div');
+                cartItem.className = 'cart-item';
+                cartItem.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}">
+                    <div class="cart-item-details">
+                        <div class="cart-item-title">${item.name}</div>
+                        <div class="cart-item-price">$${item.price}</div>
+                        <div class="cart-item-quantity">
+                            <button class="quantity-btn decrease-quantity" data-id="${item.id}">-</button>
+                            <input type="text" class="quantity-input" value="${item.quantity}" readonly>
+                            <button class="quantity-btn increase-quantity" data-id="${item.id}">+</button>
+                            <button class="btn btn-sm btn-outline-danger ms-2 remove-item" data-id="${item.id}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="fw-bold">$${item.price * item.quantity}</div>
+                `;
+                cartItems.appendChild(cartItem);
+            });
+            
+            // Actualizar totales con descuentos
+            subtotalAmount.textContent = `$${subtotal}`;
+            
+            if (hasBulkDiscount) {
+                discountLine.style.display = 'flex';
+                discountAmount.textContent = `-$${discount}`;
+            } else {
+                discountLine.style.display = 'none';
+            }
+            
+            totalAmountElement.textContent = `$${finalTotal}`;
+            cartTotal.classList.remove('d-none');
+            checkoutBtn.classList.remove('d-none');
+            paymentSection.style.display = 'none';
+        }
+        
+        // Agregar event listeners para los controles de cantidad
+        document.querySelectorAll('.decrease-quantity').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = e.target.dataset.id;
+                const item = cart.find(item => item.id === id);
+                if (item.quantity > 1) {
+                    item.quantity--;
+                } else {
+                    cart = cart.filter(item => item.id !== id);
+                }
+                updateCart();
+            });
         });
         
-        // Cerrar carrito al tocar fuera
-        cartOverlay.addEventListener('click', function(e) {
-            e.preventDefault();
+        document.querySelectorAll('.increase-quantity').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = e.target.dataset.id;
+                const item = cart.find(item => item.id === id);
+                item.quantity++;
+                updateCart();
+            });
+        });
+        
+        document.querySelectorAll('.remove-item').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = e.target.closest('.remove-item').dataset.id;
+                cart = cart.filter(item => item.id !== id);
+                updateCart();
+            });
+        });
+    }
+  
+    // Finalizar compra
+    checkoutBtn.addEventListener('click', () => {
+        paymentSection.style.display = 'block';
+        paymentSection.scrollIntoView({ behavior: 'smooth' });
+        
+        // Configurar el botón de pago
+        const payWithMercadoPago = document.getElementById('payWithMercadoPago');
+        payWithMercadoPago.onclick = processPayment; // Cambié a onclick para evitar duplicados
+    });
+  
+    // Procesar pago - FUNCIÓN CORREGIDA
+    function processPayment() {
+        if (cart.length === 0) {
+            showAlert('Tu carrito está vacío', 'warning');
+            return;
+        }
+        
+        // Calcular totales
+        const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+        const hasBulkDiscount = cartCount >= 10;
+        const discount = hasBulkDiscount ? subtotal * 0.1 : 0;
+        const finalTotal = subtotal - discount;
+        
+        // Mostrar formulario para datos del cliente
+        const customerForm = `
+            <div class="transfer-instructions">
+                <h5 class="text-center mb-3">📋 Información de Entrega</h5>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Completa tus datos para la entrega
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Nombre completo *</label>
+                    <input type="text" class="form-control" id="customerName" required placeholder="Ej: Juan Pérez">
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Teléfono/WhatsApp *</label>
+                    <input type="tel" class="form-control" id="customerPhone" required placeholder="Ej: 3416123456">
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Dirección de entrega *</label>
+                    <textarea class="form-control" id="customerAddress" required rows="3" placeholder="Ej: Calle Siempre Viva 123, Barrio Centro"></textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Instrucciones adicionales (opcional)</label>
+                    <textarea class="form-control" id="customerNotes" rows="2" placeholder="Ej: Timbre 2, departamento 4B"></textarea>
+                </div>
+                
+                <hr>
+                
+                <h5 class="text-center mb-3">💳 Método de Pago</h5>
+                <div class="alert alert-info">
+                    <strong>Total a pagar: $${finalTotal}</strong>
+                    ${discount > 0 ? `<br><small class="text-success">¡Incluye 10% de descuento por volumen!</small>` : ''}
+                    <hr>
+                    <p class="mb-2"><i class="fas fa-money-bill-wave me-2"></i>Transferí al alias:</p>
+                    <div class="text-center">
+                        <h4 class="text-primary">matiasgiorgio05</h4>
+                        <small class="text-muted">(Mercado Pago)</small>
+                    </div>
+                    <hr>
+                    <p class="small mb-1">📧 <strong>Email:</strong> giorgiomatias4@gmail.com</p>
+                    
+                    <p class="small">📱 <strong>Una vez realizada la transferencia *ENVIAR COMPROBANTE Y DIRECCION DE ENTREGA AL NUMERO* +543416170034:</strong></p>
+                    
+                    <!-- Mensaje sobre envases -->
+                    <div class="envase-promo mt-3">
+                        <i class="fas fa-recycle"></i>
+                        <p class="small mb-1"><strong>♻️ Recordá:</strong></p>
+                        <p class="small mb-0">Si devolvés el envase con su tapa, te regalamos 10% extra en tu próxima compra de yogurt</p>
+                    </div>
+                </div>
+                
+                <button type="button" class="btn btn-success w-100 mt-3" id="confirmOrder">
+                    <i class="fas fa-check-circle me-2"></i>Confirmar Pedido
+                </button>
+            </div>
+        `;
+        
+        paymentSection.innerHTML = customerForm;
+        
+        // Agregar evento al botón de confirmación
+        document.getElementById('confirmOrder').onclick = () => {
+            const nombre = document.getElementById('customerName').value;
+            const telefono = document.getElementById('customerPhone').value;
+            const direccion = document.getElementById('customerAddress').value;
+            const notas = document.getElementById('customerNotes').value;
+            
+            if (!nombre || !telefono || !direccion) {
+                showAlert('Por favor completa todos los campos obligatorios', 'warning');
+                return;
+            }
+            
+            // Crear objeto del pedido
+            const pedido = {
+                id: 'GR' + Date.now(),
+                fecha: new Date().toISOString(),
+                productos: cart.map(item => ({
+                    id: item.id,
+                    name: item.name,
+                    price: item.price,
+                    quantity: item.quantity,
+                    image: item.image
+                })),
+                subtotal: subtotal,
+                descuento: discount,
+                total: finalTotal,
+                nombre: nombre,
+                telefono: telefono,
+                direccion: direccion,
+                notas: notas,
+                estado: 'pendiente'
+            };
+            
+            // Guardar en localStorage
+            const pedidosExistentes = JSON.parse(localStorage.getItem('grecianPedidos')) || [];
+            pedidosExistentes.push(pedido);
+            localStorage.setItem('grecianPedidos', JSON.stringify(pedidosExistentes));
+            
+            console.log('Pedido guardado:', pedido);
+            console.log('Total pedidos en localStorage:', pedidosExistentes.length);
+            
+            // Mostrar mensaje de éxito
+            showAlert('✅ ¡Pedido confirmado! Hemos recibido tu pedido. Te contactaremos pronto.', 'success');
+            
+            // Reiniciar carrito
+            cart = [];
+            updateCart();
+            
+            // Cerrar el carrito
             cartSidebar.classList.remove('active');
             cartOverlay.classList.remove('active');
-        });
-        
-        // Cerrar carrito con el botón
-        const closeCart = document.getElementById('closeCart');
-        if (closeCart) {
-            closeCart.addEventListener('click', function(e) {
-                e.preventDefault();
-                cartSidebar.classList.remove('active');
-                cartOverlay.classList.remove('active');
-            });
-        }
+            
+            // Restaurar sección de pago a su estado original
+            paymentSection.innerHTML = `
+                <h5>Método de Pago</h5>
+                <button class="mercado-pago-btn" id="payWithMercadoPago">
+                    <i class="fas fa-credit-card"></i>
+                    Pagar con Mercado Pago
+                </button>
+            `;
+        };
     }
-    
-    // Prevenir problemas de zoom en inputs
-    document.addEventListener('touchstart', function() {}, { passive: true });
-});
-</script>
+  
+    // Funciones auxiliares
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'position-fixed bottom-0 end-0 p-3';
+        toast.style.zIndex = '11';
+        toast.innerHTML = `
+            <div class="toast show" role="alert">
+                <div class="toast-header">
+                    <i class="fas fa-check-circle text-success me-2"></i>
+                    <strong class="me-auto">Producto agregado</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body">
+                    ${message}
+                </div>
+            </div>
+        `;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+  
+    function showAlert(message, type) {
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
+        alert.style.zIndex = '11';
+        alert.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.body.appendChild(alert);
+        
+        setTimeout(() => {
+            alert.remove();
+        }, 5000);
+    }
+  
+    // Smooth scroll para navegación
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+  
+    // Actualizar navbar al hacer scroll
+    window.addEventListener('scroll', () => {
+        const navbar = document.querySelector('.navbar');
+        if (window.scrollY > 100) {
+            navbar.style.background = 'rgba(255, 255, 255, 0.98)';
+        } else {
+            navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+        }
+    });
+  
+    // Mejorar experiencia táctil para móvil
+    document.addEventListener('DOMContentLoaded', function() {
+        // Prevenir zoom en inputs
+        document.querySelectorAll('input, select, textarea').forEach(element => {
+            element.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+            }, { passive: false });
+        });
+    });
+  
+    // Función de prueba para verificar localStorage
+    function testLocalStorage() {
+        console.log("🔍 Probando localStorage...");
+        
+        // Ver pedidos existentes
+        const pedidos = JSON.parse(localStorage.getItem('grecianPedidos')) || [];
+        console.log("Pedidos en localStorage:", pedidos);
+    }
+  
+    // Ejecutar prueba al cargar
+    testLocalStorage();
+  </script>
+
