@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <!-- Prevenir caché en móviles -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
+<!-- Mejorar rendimiento en móviles -->
+<meta name="theme-color" content="#2E8B57">
+<link rel="manifest" href="manifest.json">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -84,6 +92,44 @@
             border-radius: 10px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
+        /* Admin responsive para móviles */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100% !important;
+        height: auto !important;
+        position: relative !important;
+    }
+    
+    .main-content {
+        margin-left: 0 !important;
+        padding: 1rem !important;
+    }
+    
+    .sidebar-menu {
+        display: flex;
+        overflow-x: auto;
+        padding: 0.5rem !important;
+    }
+    
+    .sidebar-menu a {
+        white-space: nowrap;
+        padding: 0.5rem 1rem !important;
+    }
+    
+    .stat-card {
+        padding: 1rem !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    .order-card {
+        padding: 1rem !important;
+    }
+    
+    /* Mejorar tablas para móvil */
+    .table-responsive {
+        font-size: 14px;
+    }
+}
     </style>
 </head>
 <body>
