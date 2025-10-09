@@ -92,44 +92,54 @@
             border-radius: 10px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
+
+        .cancelacion-info {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+        
         /* Admin responsive para móviles */
-@media (max-width: 768px) {
-    .sidebar {
-        width: 100% !important;
-        height: auto !important;
-        position: relative !important;
-    }
-    
-    .main-content {
-        margin-left: 0 !important;
-        padding: 1rem !important;
-    }
-    
-    .sidebar-menu {
-        display: flex;
-        overflow-x: auto;
-        padding: 0.5rem !important;
-    }
-    
-    .sidebar-menu a {
-        white-space: nowrap;
-        padding: 0.5rem 1rem !important;
-    }
-    
-    .stat-card {
-        padding: 1rem !important;
-        margin-bottom: 1rem !important;
-    }
-    
-    .order-card {
-        padding: 1rem !important;
-    }
-    
-    /* Mejorar tablas para móvil */
-    .table-responsive {
-        font-size: 14px;
-    }
-}
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100% !important;
+                height: auto !important;
+                position: relative !important;
+            }
+            
+            .main-content {
+                margin-left: 0 !important;
+                padding: 1rem !important;
+            }
+            
+            .sidebar-menu {
+                display: flex;
+                overflow-x: auto;
+                padding: 0.5rem !important;
+            }
+            
+            .sidebar-menu a {
+                white-space: nowrap;
+                padding: 0.5rem 1rem !important;
+            }
+            
+            .stat-card {
+                padding: 1rem !important;
+                margin-bottom: 1rem !important;
+            }
+            
+            .order-card {
+                padding: 1rem !important;
+            }
+            
+            /* Mejorar tablas para móvil */
+            .table-responsive {
+                font-size: 14px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -211,9 +221,9 @@
                     </div>
                     <div class="col-md-3">
                         <div class="stat-card text-center">
-                            <i class="fas fa-users fa-2x text-info mb-2"></i>
-                            <h3 id="clientesUnicos">0</h3>
-                            <p class="text-muted mb-0">Clientes Únicos</p>
+                            <i class="fas fa-times-circle fa-2x text-danger mb-2"></i>
+                            <h3 id="ingresosCancelados">$0</h3>
+                            <p class="text-muted mb-0">Cancelados</p>
                         </div>
                     </div>
                 </div>
@@ -263,6 +273,32 @@
             <!-- Sección Finanzas -->
             <div id="finanzasSection" style="display: none;">
                 <h2 class="mb-4">Reportes Financieros</h2>
+                
+                <!-- Resumen Financiero -->
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="stat-card text-center">
+                            <i class="fas fa-money-bill-wave fa-2x text-success mb-2"></i>
+                            <h4 id="ingresosNetos">$0</h4>
+                            <p class="text-muted mb-0">Ingresos Netos</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card text-center">
+                            <i class="fas fa-chart-line fa-2x text-primary mb-2"></i>
+                            <h4 id="ingresosBrutos">$0</h4>
+                            <p class="text-muted mb-0">Ingresos Brutos</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card text-center">
+                            <i class="fas fa-ban fa-2x text-danger mb-2"></i>
+                            <h4 id="totalCancelaciones">$0</h4>
+                            <p class="text-muted mb-0">Total Cancelado</p>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="row">
                     <div class="col-md-6">
                         <div class="stat-card">
@@ -281,6 +317,14 @@
                         </div>
                     </div>
                 </div>
+                
+                <div class="stat-card mt-4">
+                    <h5>Historial de Cancelaciones</h5>
+                    <div id="historialCancelaciones">
+                        <p class="text-muted">Cargando historial...</p>
+                    </div>
+                </div>
+                
                 <div class="stat-card mt-4">
                     <h5>Detalle de Transacciones</h5>
                     <div id="detalleTransacciones">
@@ -334,12 +378,20 @@
         // Cargar datos del localStorage
         function cargarDatos() {
             const pedidos = JSON.parse(localStorage.getItem('grecianPedidos')) || [];
+            const cancelaciones = JSON.parse(localStorage.getItem('grecianCancelaciones')) || [];
             
-            // Actualizar estadísticas
-            document.getElementById('totalPedidos').textContent = pedidos.length;
-            document.getElementById('pedidosPendientes').textContent = pedidos.filter(p => p.estado === 'pendiente').length;
-            document.getElementById('ingresosTotales').textContent = '$' + pedidos.reduce((total, pedido) => total + pedido.total, 0);
-            document.getElementById('clientesUnicos').textContent = new Set(pedidos.map(p => p.telefono)).size;
+            // Calcular estadísticas
+            const totalPedidos = pedidos.length;
+            const pedidosPendientes = pedidos.filter(p => p.estado === 'pendiente').length;
+            const ingresosBrutos = pedidos.reduce((total, pedido) => total + pedido.total, 0);
+            const totalCancelado = cancelaciones.reduce((total, cancel) => total + cancel.monto, 0);
+            const ingresosNetos = ingresosBrutos - totalCancelado;
+            
+            // Actualizar dashboard
+            document.getElementById('totalPedidos').textContent = totalPedidos;
+            document.getElementById('pedidosPendientes').textContent = pedidosPendientes;
+            document.getElementById('ingresosTotales').textContent = '$' + ingresosNetos.toFixed(2);
+            document.getElementById('ingresosCancelados').textContent = '$' + totalCancelado.toFixed(2);
             
             cargarPedidosRecientes();
             cargarEstadisticasRapidas();
@@ -377,8 +429,11 @@
 
         function cargarEstadisticasRapidas() {
             const pedidos = JSON.parse(localStorage.getItem('grecianPedidos')) || [];
+            const cancelaciones = JSON.parse(localStorage.getItem('grecianCancelaciones')) || [];
+            
             const hoy = new Date().toDateString();
             const pedidosHoy = pedidos.filter(p => new Date(p.fecha).toDateString() === hoy);
+            const cancelacionesHoy = cancelaciones.filter(c => new Date(c.fechaCancelacion).toDateString() === hoy);
             
             const html = `
                 <div class="mb-2">
@@ -386,6 +441,9 @@
                 </div>
                 <div class="mb-2">
                     <strong>Ingresos hoy:</strong> $${pedidosHoy.reduce((total, p) => total + p.total, 0)}
+                </div>
+                <div class="mb-2">
+                    <strong>Cancelaciones hoy:</strong> ${cancelacionesHoy.length}
                 </div>
                 <div class="mb-2">
                     <strong>Promedio por pedido:</strong> $${pedidos.length ? (pedidos.reduce((total, p) => total + p.total, 0) / pedidos.length).toFixed(2) : 0}
@@ -501,6 +559,19 @@
             const pedidoIndex = pedidos.findIndex(p => p.id === id);
             
             if (pedidoIndex !== -1) {
+                const pedido = pedidos[pedidoIndex];
+                const estadoAnterior = pedido.estado;
+                
+                // Si se cancela un pedido, registrar la cancelación
+                if (nuevoEstado === 'cancelado' && estadoAnterior !== 'cancelado') {
+                    registrarCancelacion(pedido);
+                }
+                
+                // Si se reactiva un pedido cancelado, eliminar la cancelación
+                if (estadoAnterior === 'cancelado' && nuevoEstado !== 'cancelado') {
+                    eliminarCancelacion(id);
+                }
+                
                 pedidos[pedidoIndex].estado = nuevoEstado;
                 localStorage.setItem('grecianPedidos', JSON.stringify(pedidos));
                 cargarDatos();
@@ -509,6 +580,35 @@
                 }
                 alert('Estado actualizado correctamente');
             }
+        }
+
+        // FUNCIÓN NUEVA: Registrar cancelación de pedido
+        function registrarCancelacion(pedido) {
+            const cancelaciones = JSON.parse(localStorage.getItem('grecianCancelaciones')) || [];
+            
+            const cancelacion = {
+                idPedido: pedido.id,
+                monto: pedido.total,
+                fechaCancelacion: new Date().toISOString(),
+                cliente: pedido.nombre || 'No especificado',
+                telefono: pedido.telefono,
+                productos: pedido.productos,
+                motivo: 'Cancelado por administrador'
+            };
+            
+            cancelaciones.push(cancelacion);
+            localStorage.setItem('grecianCancelaciones', JSON.stringify(cancelaciones));
+            
+            console.log(`Pedido #${pedido.id} cancelado. Monto: $${pedido.total}`);
+        }
+
+        // FUNCIÓN NUEVA: Eliminar cancelación si se reactiva el pedido
+        function eliminarCancelacion(idPedido) {
+            const cancelaciones = JSON.parse(localStorage.getItem('grecianCancelaciones')) || [];
+            const nuevasCancelaciones = cancelaciones.filter(c => c.idPedido !== idPedido);
+            localStorage.setItem('grecianCancelaciones', JSON.stringify(nuevasCancelaciones));
+            
+            console.log(`Cancelación del pedido #${idPedido} eliminada`);
         }
 
         function cargarPedidos() {
@@ -541,6 +641,12 @@
                             <p class="mb-1"><strong>Dirección:</strong> ${pedido.direccion || 'No especificada'}</p>
                             <p class="mb-1"><strong>Total:</strong> $${pedido.total}</p>
                             <p class="mb-0"><strong>Fecha:</strong> ${new Date(pedido.fecha).toLocaleString()}</p>
+                            ${pedido.estado === 'cancelado' ? `
+                                <div class="cancelacion-info">
+                                    <small><i class="fas fa-exclamation-triangle me-1"></i> 
+                                    Este pedido fue cancelado. El monto de $${pedido.total} ha sido descontado de los ingresos totales.</small>
+                                </div>
+                            ` : ''}
                         </div>
                         <div class="text-end">
                             <span class="badge bg-${getBadgeColor(pedido.estado)}">${pedido.estado}</span>
@@ -573,42 +679,57 @@
         }
 
         function cancelarPedido(id) {
-            if (confirm('¿Estás seguro de que quieres cancelar este pedido?')) {
+            if (confirm('¿Estás seguro de que quieres cancelar este pedido?\n\nEl monto será descontado automáticamente de los ingresos totales.')) {
                 cambiarEstado(id, 'cancelado');
             }
         }
 
         function cargarFinanzas() {
             const pedidos = JSON.parse(localStorage.getItem('grecianPedidos')) || [];
+            const cancelaciones = JSON.parse(localStorage.getItem('grecianCancelaciones')) || [];
             
-            // Calcular ingresos mensuales
+            // Calcular resumen financiero
+            const ingresosBrutos = pedidos.reduce((total, pedido) => total + pedido.total, 0);
+            const totalCancelado = cancelaciones.reduce((total, cancel) => total + cancel.monto, 0);
+            const ingresosNetos = ingresosBrutos - totalCancelado;
+            
+            // Actualizar resumen
+            document.getElementById('ingresosNetos').textContent = '$' + ingresosNetos.toFixed(2);
+            document.getElementById('ingresosBrutos').textContent = '$' + ingresosBrutos.toFixed(2);
+            document.getElementById('totalCancelaciones').textContent = '$' + totalCancelado.toFixed(2);
+            
+            // Calcular ingresos mensuales (solo pedidos no cancelados)
             const ingresosPorMes = {};
             pedidos.forEach(pedido => {
-                const mes = new Date(pedido.fecha).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
-                if (!ingresosPorMes[mes]) {
-                    ingresosPorMes[mes] = 0;
+                if (pedido.estado !== 'cancelado') {
+                    const mes = new Date(pedido.fecha).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+                    if (!ingresosPorMes[mes]) {
+                        ingresosPorMes[mes] = 0;
+                    }
+                    ingresosPorMes[mes] += pedido.total;
                 }
-                ingresosPorMes[mes] += pedido.total;
             });
             
             const ingresosHTML = Object.entries(ingresosPorMes).map(([mes, total]) => `
                 <div class="d-flex justify-content-between mb-2">
                     <span>${mes}</span>
-                    <strong>$${total}</strong>
+                    <strong>$${total.toFixed(2)}</strong>
                 </div>
             `).join('') || '<p class="text-muted">No hay datos de ingresos</p>';
             
             document.getElementById('ingresosMensuales').innerHTML = ingresosHTML;
             
-            // Productos más vendidos
+            // Productos más vendidos (solo pedidos no cancelados)
             const productosVendidos = {};
             pedidos.forEach(pedido => {
-                pedido.productos.forEach(producto => {
-                    if (!productosVendidos[producto.name]) {
-                        productosVendidos[producto.name] = 0;
-                    }
-                    productosVendidos[producto.name] += producto.quantity;
-                });
+                if (pedido.estado !== 'cancelado') {
+                    pedido.productos.forEach(producto => {
+                        if (!productosVendidos[producto.name]) {
+                            productosVendidos[producto.name] = 0;
+                        }
+                        productosVendidos[producto.name] += producto.quantity;
+                    });
+                }
             });
             
             const productosHTML = Object.entries(productosVendidos)
@@ -623,8 +744,32 @@
             
             document.getElementById('productosPopulares').innerHTML = productosHTML;
             
-            // Detalle de transacciones
-            const transaccionesHTML = pedidos.slice(-10).reverse().map(pedido => `
+            // Historial de cancelaciones
+            const historialHTML = cancelaciones.slice(-10).reverse().map(cancel => `
+                <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                    <div>
+                        <small class="text-muted">${new Date(cancel.fechaCancelacion).toLocaleDateString()}</small>
+                        <br>
+                        <strong>Pedido #${cancel.idPedido}</strong>
+                        <br>
+                        <small>${cancel.cliente} - ${cancel.telefono}</small>
+                    </div>
+                    <div class="text-end">
+                        <strong class="text-danger">-$${cancel.monto}</strong>
+                        <br>
+                        <small class="text-muted">${cancel.motivo}</small>
+                    </div>
+                </div>
+            `).join('') || '<p class="text-muted">No hay cancelaciones registradas</p>';
+            
+            document.getElementById('historialCancelaciones').innerHTML = historialHTML;
+            
+            // Detalle de transacciones (solo pedidos no cancelados)
+            const transaccionesHTML = pedidos
+                .filter(p => p.estado !== 'cancelado')
+                .slice(-10)
+                .reverse()
+                .map(pedido => `
                 <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
                     <div>
                         <small class="text-muted">${new Date(pedido.fecha).toLocaleDateString()}</small>
@@ -660,12 +805,14 @@
                                 th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
                                 th { background-color: #f2f2f2; }
                                 .total { font-size: 1.2em; font-weight: bold; text-align: right; }
+                                .cancelado { color: #dc3545; font-weight: bold; }
                             </style>
                         </head>
                         <body>
                             <div class="header">
                                 <h1>GRECIAN - Comida Saludable</h1>
                                 <h2>Pedido #${pedido.id}</h2>
+                                ${pedido.estado === 'cancelado' ? '<h3 class="cancelado">*** PEDIDO CANCELADO ***</h3>' : ''}
                             </div>
                             
                             <div class="section">
@@ -701,6 +848,7 @@
                                 </table>
                                 <div class="total">
                                     Total: $${pedido.total}
+                                    ${pedido.estado === 'cancelado' ? '<br><span class="cancelado">Monto descontado de ingresos</span>' : ''}
                                 </div>
                             </div>
                             
